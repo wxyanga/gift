@@ -21,6 +21,15 @@
 			<el-form-item label="用户E-mail：">
 				<el-input v-model="form.email" placeholder="输入用户E-mail"></el-input>
 			</el-form-item>
+			<el-form-item label="快递站：" prop="content">
+				<!-- <el-input type="textarea" show-word-limit maxlength="60" v-model="form.content"></el-input> -->
+				<el-select v-model="form.id">
+					<el-option v-for="it in addressData" :key="it.id" :value="it.id" :label="it['xzl_name'] || it['org_name']"></el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item label="代理商：">
+				<el-input v-model="form.proxyId" placeholder="输入代理商电话"></el-input>
+			</el-form-item>
 			<el-form-item>
 				<el-button type="primary" @click="getTableData">查询</el-button>
 			</el-form-item>
@@ -71,71 +80,83 @@ yesterday_cnt: "000000"
 </template>
 
 <script>
-	import mixin from 'static/mixins.js'
-	import CommonDialogs from './CommonDialogs.vue'
+import mixin from 'static/mixins.js'
+import CommonDialogs from './CommonDialogs.vue'
 
-	export default {
-		components: {
-			CommonDialogs
+export default {
+	components: {
+		CommonDialogs
+	},
+	mixins: [mixin.pagination],
+	data() {
+		return {
+			form: {
+				userId: '',
+				times: ['', ''],
+				qq: '',
+				email: '',
+				id: '',
+				proxyId: ''
+			},
+			uploadForm: {
+				bal: 0,
+				price: 0
+				// userType: ''
+			},
+			ModifyMoney: false,
+			ModifyVip: false,
+			ModifyType: false,
+			modifyStytus: false,
+			modifyNewPass: '',
+			handleForm: {},
+			lvMap: [],
+			addressData: []
+		}
+	},
+	mounted() {
+		this.getTableData()
+	},
+	methods: {
+		getBeforeDefaultData() {
+			this.$post(this.$API.URL_GET_USER_ADDRESS, {}, '', true).then(res => {
+				res.unshift({ org_name: '', xzl_name: '全部', id: '' })
+				this.addressData = res
+			})
 		},
-		mixins: [mixin.pagination],
-		data() {
-			return {
-				form: {
-					userId: '',
-					times: ['', ''],
-					qq: '',
-					email: ''
-				},
-				uploadForm: {
-					bal: 0,
-					price: 0
-					// userType: ''
-				},
-				ModifyMoney: false,
-				ModifyVip: false,
-				ModifyType: false,
-				modifyStytus: false,
-				modifyNewPass: '',
-				handleForm: {},
-				lvMap: []
-			}
-		},
-		mounted() {
+		callback() {
 			this.getTableData()
 		},
-		methods: {
-			callback() {
-				this.getTableData()
-			},
-			cMoney() {
-				this.uploadForm.bal = this.handleForm['bal']
-				this.ModifyMoney = true
-			},
-			cVip() {
-				this.uploadForm.bal = this.handleForm['bal']
-				this.ModifyVip = true
-			},
-			cType() {
-				this.uploadForm.price = this.handleForm['price']
-				this.ModifyType = true
-			},
-			getVIPType() {
-				// let params = {}
-				// this.$post(this.$API.URL_GET_VIP_TYPE,params,'').then()
-				this.lvMap = userLv
-			},
-			getTableData() {
-				let params = {
-					signUpDate: this.form.times || ['', ''],
-					userId: this.form.userId,
-					qq: this.form.qq,
-					email: this.form.email
-				}
-				this.$post(this.$API.URL_KF_ALL_USER, params, '').then(res => {
-					this.tableData = res
-				})
+		cMoney() {
+			this.uploadForm.bal = this.handleForm['bal']
+			this.ModifyMoney = true
+		},
+		cVip() {
+			this.uploadForm.bal = this.handleForm['bal']
+			this.ModifyVip = true
+		},
+		cType() {
+			this.uploadForm.price = this.handleForm['price']
+			this.ModifyType = true
+		},
+		getVIPType() {
+			// let params = {}
+			// this.$post(this.$API.URL_GET_VIP_TYPE,params,'').then()
+			this.lvMap = userLv
+		},
+		getTableData() {
+			let params = {
+				signUpDate: this.form.times || ['', ''],
+				userId: this.form.userId,
+				qq: this.form.qq,
+				email: this.form.email,
+				id: this.form.id,
+				proxyId: this.form.proxyId
 			}
+			this.$post(this.$API.URL_KF_ALL_USER, params, '', true).then(res => {
+				this.tableData = res
+				if (!this.addressData.length) this.getBeforeDefaultData()
+			})
 		}
 	}
+}
 </script>

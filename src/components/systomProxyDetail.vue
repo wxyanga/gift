@@ -35,7 +35,7 @@
 				<el-table :data="tableData" @selection-change="handleSelectionChange">
 					<el-table-column type="index" label="#"></el-table-column>
 					<el-table-column prop="date" label="统计月份"></el-table-column>
-					<el-table-column prop="proxyId" v-if="$route.params.id == 2" label="代理商"></el-table-column>
+					<el-table-column prop="proxy" label="代理商"></el-table-column>
 					<el-table-column prop="cnt" label="单量"></el-table-column>
 					<el-table-column prop="diff_cnt" label="两月单差"></el-table-column>
 					<el-table-column prop="amt" label="总收入"></el-table-column>
@@ -48,7 +48,7 @@
 				<el-table :data="tableData1" @selection-change="handleSelectionChange">
 					<el-table-column type="index" label="#"></el-table-column>
 					<el-table-column prop="date" label="统计日期"></el-table-column>
-					<el-table-column prop="proxyId" v-if="$route.params.id == 2" label="代理商"></el-table-column>
+					<el-table-column prop="proxy" label="代理商"></el-table-column>
 					<el-table-column prop="cnt" label="单量"></el-table-column>
 					<el-table-column prop="diff_cnt" label="2日单差"></el-table-column>
 					<el-table-column prop="amt" label="总收入"></el-table-column>
@@ -99,14 +99,7 @@ export default {
 			expressStatus: expressStatus,
 			useExpress: [],
 			multipleSelection: [],
-			addressData: [],
-			type: ''
-		}
-	},
-	watch: {
-		'$route.params.id'() {
-			this.init()
-			this.getTableData()
+			addressData: []
 		}
 	},
 	mounted() {
@@ -126,13 +119,9 @@ export default {
 			this.getTableData()
 		},
 		init() {
-			if (this.$route.params.id) {
-				this.type = ['', ['URL_KF_ALL_DAY', 'URL_KF_ALL_MONTH'], ['URL_KF_PROXY_DAY', 'URL_KF_PROXY_MONTH']][this.$route.params.id]
-				this.$log('-------', this.type, this.$route.params.id)
-			}
-			// this.$post(this.$API.URL_GET_EXPRESS_ORDER, {}, '').then(res => {
-			// 	this.useExpress = res['express_type']
-			// })
+			this.$post(this.$API.URL_GET_EXPRESS_ORDER, {}, '').then(res => {
+				this.useExpress = res['express_type']
+			})
 		},
 		changeStatus(row, rows) {
 			let id = []
@@ -170,12 +159,10 @@ export default {
 				id: this.form.id,
 				proxyId: this.form.proxyId
 			}
-			// if (this.$route.params.id == 2) params.sendId = this.form.id
-			// else params.id = this.form.id
-			this.$post(this.$API[this.type[1]], params, '').then(res => {
+			this.$post(this.$API.URL_KF_ALL_MONTH, params, '').then(res => {
 				this.tableData = res
 			})
-			this.$post(this.$API[this.type[0]], params, '').then(res => {
+			this.$post(this.$API.URL_KF_ALL_DAY, params, '').then(res => {
 				this.tableData1 = res
 			})
 

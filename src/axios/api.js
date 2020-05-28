@@ -1,4 +1,21 @@
 export default {
+	// NO 2
+	PROXY_ADD: getBaseUrl + '/kf/add/proxy/', //新增代理                   OK 参数同注册接口，只是不用验证码
+	PROXY_SEARCH: getBaseUrl + '/proxy/list/', //代理列表                  OK 代理商列表
+	PROXY_MODIFY: getBaseUrl + '/kf/add/proxy/', //代理修改--缺
+	PROXY_INFO: getBaseUrl + '/kf/add/proxy/', //代理账户信息--缺
+	PROXY_ORDER: getBaseUrl + '/proxy/order/list/', //代理看当天订单        OK 参数同会员订单列表接口 分页查找单号信息
+	PROXY_MEMBER: getBaseUrl + '/proxy/member/list/', //代理看下属会员      OK 参数无
+	PROXY_SUMM_DAY: getBaseUrl + '/proxy/summ/day/', // 代理商日统计        OK 参数同管理员日统计
+	PROXY_SUMM_MONTH: getBaseUrl + '/proxy/summ/month/', // 代理商月统计    OK 参数同管理员月统计
+	PROXY_ADDRESS: getBaseUrl + '/portal/add/send/org/', // 新增发货人      OK
+	PROXY_MODIFY_ADDRESS: getBaseUrl + '/portal/update/send/org/', // 修改发货人      OK
+	PROXY_CHARGE: getBaseUrl + '/kf/check/charge/', //充值轮询语音提示
+	URL_KF_PROXY_DAY: getBaseUrl + '/kf/bi/proxy/day/',
+	URL_KF_PROXY_MONTH: getBaseUrl + '/kf/bi/proxy/month/',
+	// 注册接口添加代理ID字段
+
+	//NO 1
 	// 登录注册接口
 	URL_LOGIN: getBaseUrl + '/portal/sign/in/', //登录
 	URL_REGISTER: getBaseUrl + '/portal/sign/up/', // 注册

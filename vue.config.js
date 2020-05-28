@@ -6,6 +6,7 @@ function resolve(dir) {
 
 module.exports = {
 	// baseUrl: './',
+	productionSourceMap: false,
 	publicPath: isProduction ? '/static/kbao/' : '/',
 	//配置目录别名
 	chainWebpack: config => {

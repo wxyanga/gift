@@ -10,6 +10,11 @@
 		</el-form>
 		<el-table :data="tableData">
 			<el-table-column type="index" label="#" width="80px"></el-table-column>
+			<el-table-column label="公告位置">
+				<template slot-scope="scope">
+					{{ scope.row['speak_to'] == 'public' ? '顶部公告' : scope.row['speak_to'] + '公告' }}
+				</template>
+			</el-table-column>
 			<el-table-column prop="content" label="公告内容"></el-table-column>
 			<el-table-column label="操作" width="150px">
 				<template slot-scope="scope">
@@ -21,6 +26,12 @@
 		<common-dialogs :right-click="dialogConfirm" :left-click="closedDialog" :closed-dialog="closedDialog" class="cust-Dialog-01">
 			<template slot="add">
 				<el-form style="width:80%" :model="form" ref="form" :rules="rules" label-width="130px">
+					<el-form-item label="公告位置：" prop="content">
+						<!-- <el-input type="textarea" show-word-limit maxlength="60" v-model="form.content"></el-input> -->
+						<el-select v-model="form.speakTo">
+							<el-option v-for="it in addressData" :key="it['org_name']" :value="it['org_name']" :label="(it['xzl_name'] || it['org_name']) + '公告'"></el-option>
+						</el-select>
+					</el-form-item>
 					<el-form-item label="公告内容：" prop="content">
 						<el-input type="textarea" show-word-limit maxlength="60" v-model="form.content"></el-input>
 					</el-form-item>
@@ -28,6 +39,12 @@
 			</template>
 			<template slot="modify">
 				<el-form style="width:80%" :model="form" ref="form" :rules="rules" label-width="130px">
+					<el-form-item label="公告位置：" prop="content">
+						<!-- <el-input type="textarea" show-word-limit maxlength="60" v-model="form.content"></el-input> -->
+						<el-select v-model="form.speakTo">
+							<el-option v-for="it in addressData" :key="it['org_name']" :value="it['org_name']" :label="(it['xzl_name'] || it['org_name']) + '公告'"></el-option>
+						</el-select>
+					</el-form-item>
 					<el-form-item label="公告内容：" prop="content">
 						<el-input type="textarea" show-word-limit maxlength="60" v-model="form.content"></el-input>
 					</el-form-item>
@@ -50,6 +67,7 @@ export default {
 		CommonDialogs
 	},
 	mixins: [mixin.INFO],
+
 	data() {
 		let checkRecive = (rule, value, callback) => {
 			if (!value) {
@@ -124,6 +142,7 @@ export default {
 				expressOrder: ''
 			},
 			form: {
+				speakTo: '',
 				content: ''
 			},
 			expTypes: [],
@@ -131,7 +150,8 @@ export default {
 			separateSelected: '',
 			ExpTable: [],
 			modifyStytus: false,
-			tableData: []
+			tableData: [],
+			addressData: []
 		}
 	},
 
@@ -140,11 +160,19 @@ export default {
 		// URL_KF_ADD_PUBLIC: getBaseUrl + '/kf/notice/add/', // 新增公告
 		// URL_KF_MODIFY_PUBLIC: getBaseUrl + '/kf/notice/update/', // 修改公告
 		// URL_KF_DELETE_PUBLIC: getBaseUrl + '/kf/notice/delete/', // 删除公告
+		this.getBeforeDefaultData()
 		this.getDefaultData()
 	},
 	methods: {
+		getBeforeDefaultData() {
+			this.$post(this.$API.URL_GET_USER_ADDRESS, {}, '').then(res => {
+				res.unshift({ org_name: 'public', xzl_name: '顶部' })
+				this.addressData = res
+			})
+		},
 		addPublic() {
 			this.form = {
+				speakTo: 'public',
 				content: ''
 			}
 			this.$showDialog({ title: '新增公告', slotName: 'add' })
@@ -175,6 +203,7 @@ export default {
 		setDefault(row) {
 			this.form = {
 				id: row.id,
+				speakTo: row['speak_to'],
 				content: row.content
 			}
 			this.$showDialog({ title: '修改公告', slotName: 'modify' })

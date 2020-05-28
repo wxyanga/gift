@@ -1,244 +1,203 @@
 var isProduction = '/static/kbao/'
 // isProduction = '/'
 var showCollection = {
-	dialog: true,
+	dialog: false,
 	url: 'http://www.taopingan.com',
 	netName: '招财猫实物快递网',
 	content: '大家收藏下我们快递的新网址，以后大家都用新网址。',
 	times: 1
 }
-var getBaseUrl = 'http://8.129.22.111:80'
+var printMethine = [
+	{
+		agentId: '6510003625864851',
+		agentName: '晋江打印机'
+	}
+]
+// var getBaseUrl = 'http://8.129.22.111:80'
+var getBaseUrl = 'http://39.98.242.160:80'
+
 // 系统菜单 分管理员与用户
-// var menuAll = [
-// 	{
-// 		index: 'system',
-// 		icon: 'el-icon-message',
-// 		name: '系统管理',
-// 		children: [
-// 			{
-// 				index: 'systomVIP',
-// 				icon: 'el-icon-message',
-// 				name: '会员管理'
-// 			},
-// 			{
-// 				index: 'systomExpressOrder',
-// 				icon: 'el-icon-message',
-// 				name: '快递单号管理'
-// 			}
-// 		]
-// 	},
-// 	{
-// 		index: 'finance',
-// 		icon: 'el-icon-message',
-// 		name: '财务管理',
-// 		children: [
-// 			{
-// 				index: 'deliverGoods',
-// 				icon: 'el-icon-message',
-// 				name: '面单发货'
-// 			},
-// 			{
-// 				index: 'financeCheck',
-// 				icon: 'el-icon-message',
-// 				name: '充值审核'
-// 			}
-// 		]
-// 	},
-// 	{
-// 		index: 'home',
-// 		icon: 'el-icon-message',
-// 		name: '账户管理',
-// 		children: [
-// 			{
-// 				index: 'userInfo',
-// 				icon: 'el-icon-message',
-// 				name: '账户信息'
-// 			}
-// 		]
-// 	},
-// 	{
-// 		index: 'express',
-// 		icon: 'el-icon-message',
-// 		name: '快递单号',
-// 		children: [
-// 			{
-// 				index: 'userExpressOrder',
-// 				icon: 'el-icon-message',
-// 				name: '购买单号'
-// 			},
-// 			{
-// 				index: 'userExpressSearch',
-// 				icon: 'el-icon-message',
-// 				name: '单号查询'
-// 			}
-// 		]
-// 	},
-// 	{
-// 		index: 'charge',
-// 		icon: 'el-icon-message',
-// 		name: '资金管理',
-// 		children: [
-// 			{
-// 				index: 'userRecharge',
-// 				icon: 'el-icon-message',
-// 				name: '充值'
-// 			},
-// 			{
-// 				index: 'userRechargeDetail',
-// 				icon: 'el-icon-message',
-// 				name: '资金明细'
-// 			}
-// 		]
-// 	},
-// 	{
-// 		index: 'info',
-// 		icon: 'el-icon-message',
-// 		name: '账户管理',
-// 		children: [
-// 			{
-// 				index: 'userInfo',
-// 				icon: 'el-icon-message',
-// 				name: '账户信息'
-// 			}
-// 		]
-// 	}
-// ]
+var mediaAudio = {
+	url: isProduction + 'media/chart.wav',
+	times: 1000 * 10
+}
+// gift新增 代理商
+var _admin = [
+	{
+		index: 'finance',
+		icon: 'el-icon-service',
+		name: '财务管理',
+		children: [
+			{
+				index: 'deliverGoods',
+				icon: 'el-icon-message',
+				name: '面单发货'
+			},
+			{
+				index: 'financeCheck',
+				icon: 'el-icon-message',
+				name: '充值审核'
+			},
+			{
+				index: 'deliverGoodsBatchResend',
+				icon: 'el-icon-message',
+				name: '补打单号'
+			}
+		]
+	},
+
+	{
+		index: 'Statistics',
+		icon: 'el-icon-info',
+		name: '统计信息',
+		children: [
+			{
+				index: 'systomStatistics_1',
+				icon: 'el-icon-message',
+				name: '平台统计'
+			},
+			{
+				index: 'systomVIPDetail',
+				icon: 'el-icon-message',
+				name: '商户统计'
+			},
+			{
+				index: 'systomStatistics_2',
+				icon: 'el-icon-message',
+				name: '代理商统计'
+			}
+		]
+	},
+	{
+		index: 'system',
+		icon: 'el-icon-setting',
+		name: '系统管理',
+		children: [
+			{
+				index: 'systemPublic',
+				icon: 'el-icon-message',
+				name: '公告管理'
+			},
+			{
+				index: 'systomVIP',
+				icon: 'el-icon-message',
+				name: '会员管理'
+			},
+
+			{
+				index: 'systomExpressOrder',
+				icon: 'el-icon-message',
+				name: '快递单号管理'
+			},
+			{
+				index: 'systemAddressSet',
+				icon: 'el-icon-message',
+				name: '发货信息设置'
+			},
+			{
+				index: 'systomQQ',
+				icon: 'el-icon-message',
+				name: '客服QQ管理'
+			},
+			{
+				index: 'proxyAdd',
+				name: '添加代理商'
+			}
+		]
+	},
+	{
+		index: 'home',
+		icon: 'el-icon-tickets',
+		name: '账户管理',
+		children: [
+			{
+				index: 'userInfo',
+				icon: 'el-icon-message',
+				name: '账户信息'
+			}
+		]
+	}
+]
+var _user = [
+	{
+		index: 'express',
+		icon: 'el-icon-printer',
+		name: '快递单号',
+		children: []
+	},
+	{
+		index: 'charge',
+		icon: 'el-icon-info',
+		name: '资金管理',
+		children: [
+			{
+				index: 'userRecharge',
+				icon: 'el-icon-message',
+				name: '充值'
+			},
+			{
+				index: 'userRechargeDetail',
+				icon: 'el-icon-zoom-in',
+				name: '资金明细'
+			}
+		]
+	},
+	{
+		index: 'info',
+		icon: 'el-icon-document',
+		name: '账户管理',
+		children: [
+			{
+				index: 'userInfo',
+				icon: 'el-icon-message',
+				name: '账户信息'
+			}
+		]
+	}
+]
+var _proxy = [
+	{
+		index: 'proxyStatistics',
+		icon: 'el-icon-info',
+		name: '统计信息',
+		children: [
+			{
+				index: 'proxyStatistics',
+				name: '平台统计'
+			},
+			{
+				index: 'proxyExpressSearch',
+				name: '今日发货明细'
+			}
+		]
+	},
+	{
+		index: 'proxySystem',
+		icon: 'el-icon-setting',
+		name: '系统管理',
+		children: [
+			{
+				index: 'proxyVIP',
+				name: '会员管理'
+			}
+		]
+	},
+	{
+		index: 'proxyAccount',
+		icon: 'el-icon-document',
+		name: '账户管理',
+		children: [
+			{
+				index: 'proxyInfo',
+				name: '账户信息'
+			}
+		]
+	}
+]
 var menu = {
-	admin: [
-		{
-			index: 'finance',
-			icon: 'el-icon-service',
-			name: '财务管理',
-			children: [
-				{
-					index: 'deliverGoods',
-					icon: 'el-icon-message',
-					name: '面单发货'
-				},
-				{
-					index: 'financeCheck',
-					icon: 'el-icon-message',
-					name: '充值审核'
-				},
-				{
-					index: 'deliverGoodsBatchResend',
-					icon: 'el-icon-message',
-					name: '补打单号'
-				}
-			]
-		},
-
-		{
-			index: 'Statistics',
-			icon: 'el-icon-info',
-			name: '统计信息',
-			children: [
-				{
-					index: 'systomStatistics',
-					icon: 'el-icon-message',
-					name: '平台统计'
-				},
-				{
-					index: 'systomVIPDetail',
-					icon: 'el-icon-message',
-					name: '商户统计'
-				}
-			]
-		},
-		{
-			index: 'system',
-			icon: 'el-icon-setting',
-			name: '系统管理',
-			children: [
-				{
-					index: 'systemPublic',
-					icon: 'el-icon-message',
-					name: '公告管理'
-				},
-				{
-					index: 'systomVIP',
-					icon: 'el-icon-message',
-					name: '会员管理'
-				},
-
-				{
-					index: 'systomExpressOrder',
-					icon: 'el-icon-message',
-					name: '快递单号管理'
-				},
-				{
-					index: 'systemAddressSet',
-					icon: 'el-icon-message',
-					name: '发货信息设置'
-				},
-				{
-					index: 'systomQQ',
-					icon: 'el-icon-message',
-					name: '客服QQ管理'
-				}
-			]
-		},
-		{
-			index: 'home',
-			icon: 'el-icon-tickets',
-			name: '账户管理',
-			children: [
-				{
-					index: 'userInfo',
-					icon: 'el-icon-message',
-					name: '账户信息'
-				}
-			]
-		}
-	],
-	custom: [
-		{
-			index: 'express',
-			icon: 'el-icon-printer',
-			name: '快递单号',
-			children: [
-				{
-					index: 'userExpressOrder',
-					icon: 'el-icon-goods',
-					name: '购买单号'
-				},
-				{
-					index: 'userExpressSearch',
-					icon: 'el-icon-zoom-in',
-					name: '已买单号查询'
-				}
-			]
-		},
-		{
-			index: 'charge',
-			icon: 'el-icon-info',
-			name: '资金管理',
-			children: [
-				{
-					index: 'userRecharge',
-					icon: 'el-icon-message',
-					name: '充值'
-				},
-				{
-					index: 'userRechargeDetail',
-					icon: 'el-icon-zoom-in',
-					name: '资金明细'
-				}
-			]
-		},
-		{
-			index: 'info',
-			icon: 'el-icon-document',
-			name: '账户管理',
-			children: [
-				{
-					index: 'userInfo',
-					icon: 'el-icon-message',
-					name: '账户信息'
-				}
-			]
-		}
-	]
+	admin: [..._admin],
+	custom: [..._user],
+	proxy: [..._proxy]
 }
 // 资金类型
 var moneyType = [
@@ -381,8 +340,8 @@ var getQQ = [
 ]
 // 系统配置
 var systomConfig = {
-	name: '招财猫实物快递网',
-	label: '欢迎使用招财猫实物快递网。',
+	name: '礼品网',
+	label: '欢迎使用礼品网。',
 	url: '',
 	style: 'color: green'
 }

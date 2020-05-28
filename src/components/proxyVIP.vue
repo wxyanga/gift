@@ -4,34 +4,9 @@
 			<el-form-item label="用户名：">
 				<el-input v-model="form.userId" placeholder="输入用户名"></el-input>
 			</el-form-item>
-			<el-form-item label="代理商：">
-				<el-input v-model="form.proxyId" placeholder="输入代理商电话"></el-input>
-			</el-form-item>
-			<!-- <el-form-item label="VIP类型：">
-				<el-select v-model="form.type">
-					<el-option v-for="(item, index) in lvMap" :key="index" :label="item.label" :value="item.value"></el-option>
-				</el-select>
-			</el-form-item> -->
-			<!-- <el-form-item label="注册时间：">
-				<el-date-picker
-					format="yyyy 年 MM 月 dd 日"
-					value-format="yyyy-MM-dd"
-					v-model="form.times"
-					type="daterange"
-					range-separator="至"
-					start-placeholder="开始日期"
-					end-placeholder="结束日期"
-				>
-				</el-date-picker>
-			</el-form-item> -->
-			<!-- <el-form-item label="充值范围：">
-				<el-input style="width:100px" v-model="form.min" :controls="false" placeholder="最小金额"></el-input>
-				<span style="margin:0 5px">至</span>
-				<el-input style="width:100px" v-model="form.max" :controls="false" placeholder="最大金额"></el-input>
-			</el-form-item> -->
 			<el-form-item>
 				<el-button type="primary" @click="getTableData">查询</el-button>
-				<el-button type="primary" @click="lookHistory(form.userId, form.proxyId)">查看修改历史</el-button>
+				<!-- <el-button type="primary" @click="lookHistory(form.userId)">查看修改历史</el-button> -->
 			</el-form-item>
 			<el-form-item>
 				<!-- <el-button type="primary" @click="addVipType">添加VIP类型</el-button> -->
@@ -49,16 +24,15 @@
 			<el-table-column label="账户余额" prop="bal"> </el-table-column>
 			<el-table-column label="QQ号码" prop="qq"></el-table-column>
 			<el-table-column label="E-mail" prop="email"></el-table-column>
-			<el-table-column label="所属代理商" prop="reference"></el-table-column>
 			<el-table-column label="创建时间" prop="create_date"></el-table-column>
-			<el-table-column label="操作">
+			<!-- <el-table-column label="操作">
 				<template slot-scope="prop">
 					<el-button @click="changeVIPType(prop.row)">编辑</el-button>
 					<el-button @click="lookHistory(prop.row['user_id'])">查看修改历史</el-button>
 				</template>
-			</el-table-column>
+			</el-table-column> -->
 		</el-table>
-		<el-pagination
+		<!-- <el-pagination
 			@size-change="handleSizeChange"
 			@current-change="handleCurrentChange"
 			background
@@ -68,7 +42,7 @@
 			:current-page="pageNum"
 			layout="total,  prev, pager, next"
 		>
-		</el-pagination>
+		</el-pagination> -->
 		<common-dialogs
 			:right-click="dialogConfirm"
 			:left-click="closedDialog"
@@ -153,7 +127,6 @@
 							<el-button type="text" style="margin-left:30px" @click="cEmail">编辑</el-button>
 						</div>
 					</el-form-item>
-					<el-form-item label="所属代理商：">{{ handleForm.reference }}</el-form-item>
 					<el-form-item label="注册时间：">{{ handleForm['create_date'] }}</el-form-item>
 				</el-form>
 			</template>
@@ -249,10 +222,9 @@ export default {
 			// this.$post(this.$API.URL_GET_VIP_TYPE,params,'').then()
 			this.lvMap = userLv
 		},
-		lookHistory(id, proxyId) {
+		lookHistory(id) {
 			this.historyData = []
 			let params = { userId: id }
-			proxyId && (params.proxyId = proxyId)
 			this.$post(this.$API.URL_KF_UPDATE_HISTORY, params, '').then(res => {
 				this.historyData = res
 				// this.$showDialog({ title: '修改历史', slotName: 'history' })
@@ -263,16 +235,60 @@ export default {
 			!callback && (this.pageNum = 1)
 			let params = {
 				userId: this.form.userId,
-				proxyId: this.form.proxyId,
 				pageSize: this.pageSize,
 				page: this.pageNum
 			}
-			this.$post(this.$API.URL_KF_FIND_USER, params, '').then(res => {
-				this.tableData = res.data
+			this.$post(this.$API.PROXY_MEMBER, params, '').then(res => {
+				if (res.length) {
+					res = res.map(it => {
+						it.email = it.email
+							.replace(/[\w\W]/g, '*')
+							.replace(/(^[\w\W]{3})/, it.email.substr(0, 3))
+							.replace(/([\w\W]{3}$)/, it.email.substring(it.email.length - 3))
+						it.qq = it.qq
+							.replace(/[\w\W]/g, '*')
+							.replace(/(^[\w\W]{2})/, it.qq.substr(0, 2))
+							.replace(/([\w\W]{2}$)/, it.qq.substring(it.qq.length - 2))
+						it['user_id'] = it['user_id']
+							.replace(/[\w\W]/g, '*')
+							.replace(/(^[\w\W]{3})/, it['user_id'].substr(0, 3))
+							.replace(/([\w\W]{3}$)/, it['user_id'].substring(it['user_id'].length - 3))
+						return it
+					})
+				}
+				this.tableData = res
 				this.pageNum = res.pageNum
 				this.total = res.total
 			})
 		},
+		// getTableData(e, callback) {
+		// 	!callback && (this.pageNum = 1)
+		// 	let params = {
+		// 		userId: this.form.userId,
+		// 		pageSize: this.pageSize,
+		// 		page: this.pageNum
+		// 	}
+		// 	this.$post(this.$API.PROXY_MEMBER, params, '').then(res => {
+		// 		if (res.length) {
+		// 			res = res.map(it => {
+		// 				it.email = this.comp(it.email)
+		// 				it.qq = this.comp(it.qq, 2)
+		// 				it['user_id'] = this.comp(it['user_id'])
+		// 				return it
+		// 			})
+		// 		}
+		// 		this.tableData = res
+		// 		this.pageNum = res.pageNum
+		// 		this.total = res.total
+		// 	})
+		// },
+		// comp(value, num = 3) {
+		// 	let res = value
+		// 		.replace(/[\w\W]/g, '*')
+		// 		.replace(/(^[\w\W]{num})/, value.substr(0, num))
+		// 		.replace(/([\w\W]{num}$)/, value.substring(value.length - num))
+		// 	return res
+		// },
 		addVipType() {
 			this.handleForm = {
 				label: '',

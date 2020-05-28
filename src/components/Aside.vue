@@ -6,7 +6,10 @@
 				<span slot="title">{{ menu.name }}</span>
 			</el-menu-item>
 			<el-submenu v-else :index="menu.index" :key="menu.index">
-				<template slot="title"><i :class="menu.icon"></i>{{ menu.name }}</template>
+				<template slot="title">
+					<i :class="menu.icon"></i>
+					{{ menu.name }}
+				</template>
 				<template v-for="smenu in menu.children">
 					<el-menu-item v-if="!smenu.children" :index="smenu.index" :key="smenu.index">
 						<!-- <i :class="smenu.icon"></i> -->
@@ -26,8 +29,11 @@
 </template>
 
 <script>
+import mixin from 'static/mixins.js'
+
 export default {
 	name: 'cus-aside',
+	mixins: [mixin.VIPUSER],
 	provider() {
 		return {}
 	},
@@ -49,12 +55,18 @@ export default {
 			this.$log('---needChange menu', this.userType)
 			// this.menuData = mock.menu[this.userType]
 			this.menuData = menu[this['userType']]
+			if (this.userType == 'custom') this.defaultOpeneds = ['express', 'charge', 'info']
+			// this.isCuston = this['u']
 			// this.menuData = menu['admin']
 			// this.menuData = menuAll
 		},
 		menuSelect(name) {
-			// this.$log('menuSelect', arguments)
-			this.$router.push({ name })
+			this.$log('menuSelect', arguments)
+			if (/userExpressOrder.*\d$/.test(name) || /systomStatistics.*\d$/.test(name)) {
+				this.$router.push({ path: name })
+			} else {
+				this.$router.push({ name })
+			}
 		}
 	}
 }

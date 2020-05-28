@@ -1,13 +1,16 @@
 <template>
 	<div>
-		<!-- <div class="tipsClass">
-			<template v-for="(it, index) in tips">
-				<a v-if="it.url" :key="index" :href="it.url" target="_blank" :style="it.style">{{ it.label }}</a>
-				<span v-else :key="index" :href="it.url" target="_blank" :style="it.style">{{ it.label }}</span>
-			</template>
-		</div>-->
 		<el-tabs v-model="activeName" type="card">
 			<el-tab-pane label="批量录入" name="second">
+				<el-form label-width="150px">
+					<el-form-item label="快递站公告">
+						<el-carousel height="40px" indicator-position="none" arrow="never" direction="vertical" :interval="5000">
+							<el-carousel-item v-for="item in msg" :key="item.content">
+								<div>{{ item.content }}</div>
+							</el-carousel-item>
+						</el-carousel>
+					</el-form-item>
+				</el-form>
 				<el-form label-width="150px">
 					<!-- <el-form-item label="地址">
 						{{ validatorForm.setNewAddress }}
@@ -142,6 +145,16 @@
 				</el-table>
 			</el-tab-pane>
 			<el-tab-pane label="Excel录入" name="first">
+				<el-form label-width="150px">
+					<el-form-item label="快递站公告">
+						<el-carousel height="40px" indicator-position="none" arrow="never" direction="vertical" :interval="5000">
+							<el-carousel-item v-for="item in msg" :key="item.content">
+								<div>{{ item.content }}</div>
+							</el-carousel-item>
+						</el-carousel>
+					</el-form-item>
+				</el-form>
+
 				<el-form label-width="150px">
 					<!-- <el-form-item label="地址">
 						{{ validatorForm.setNewAddress }}
@@ -396,7 +409,6 @@ export default {
 				receiveAddr: [{ required: true, message: '请输入收件人详细地址', trigger: 'blur' }]
 			},
 			step: 1,
-			tips: [],
 
 			sendAddr: [], // 所有地址
 			AddressBookSelect: {},
@@ -419,13 +431,19 @@ export default {
 			separateExpByType: [],
 			separateSelected: '',
 			ExpTable: [],
-			modifyStytus: false
+			modifyStytus: false,
+			msg: [],
+			addId: ''
 		}
 	},
 
 	mounted() {
+		if (this.$route.params.id) {
+			this.addId = this.$route.params.id
+		}
 		this.init()
 		this.getDefaultData()
+		this.getDefaultMsgData()
 		this.getExpType()
 	},
 	computed: {
@@ -436,7 +454,19 @@ export default {
 			})
 		}
 	},
+	watch: {
+		'$route.params.id'() {
+			this.getDefaultMsgData()
+			this.setSender()
+		}
+	},
 	methods: {
+		getDefaultMsgData() {
+			this.$post(this.$API.URL_KF_PUBLIC_LIST, {}, '').then(res => {
+				this.msg = res.filter(it => it['speak_to'] == this.$store.vipUserAddress[this.$route.params.id]['org_name'])
+				if (!res.length) this.msg = [{ content: '' }]
+			})
+		},
 		handleLeftClick() {
 			this.modifyStytus = false
 		},
@@ -595,22 +625,26 @@ export default {
 			this.fileName = ''
 		},
 		init() {
-			this.tips = userRechargeTips
 			this.separateExpByType = separateExpByType
 			this.separateSelected = separateExpByType[0].map
 		},
-
+		setSender() {
+			let f = []
+			f[0] = this.$store.vipUserAddress[this.$route.params.id]
+			f[0].agentId = f[0]['agent_id']
+			f[0].agentName = f[0]['agent_name']
+			f[0].sendId = f[0].id
+			if (f[0]) {
+				this.validatorForm.setSelectObj = f[0]
+				this.validatorForm.setNewAddress = `${f[0].name}/${f[0].prov}/${f[0].city}/${f[0].county}/${f[0].address}/${f[0].tel}/${f[0].postid}`
+				this.handleSelect(f[0])
+			}
+		},
 		getDefaultData() {
+			this.setSender()
 			this.$post(this.$API.URL_GET_USER_ADDRESS, {}, '').then(res => {
 				this.sendAddr = res
-				let f = this.sendAddr.filter(item => item['is_default'] == 1)
-				// let f = []
-				// if (this.userInfo.defaultAddr) f.push(this.userInfo.defaultAddr)
-				if (f[0]) {
-					this.validatorForm.setSelectObj = f[0]
-					this.validatorForm.setNewAddress = `${f[0].name}/${f[0].prov}/${f[0].city}/${f[0].county}/${f[0].address}/${f[0].tel}/${f[0].postid}`
-					this.handleSelect(f[0])
-				}
+				// let f = this.sendAddr.filter(item => item['is_default'] == 1)
 			})
 		},
 		upEXP() {
@@ -624,7 +658,7 @@ export default {
 					let sel = this.validatorForm.setSelectObj
 					this.$log('this.validatorForm.setSelectObj', this.validatorForm.setSelectObj)
 					if (sel && sel.prov && sel.county && sel.address) {
-						let { address, prov, city, county, name, tel, postid } = sel
+						let { address, prov, city, county, name, tel, postid, agentId, agentName, sendId } = sel
 						let expressType = this.setDefaultExpType['express_type']
 						let amt = this.setDefaultExpType.myMoney
 						let flag = this.ExpTable.filter(item => {
@@ -654,6 +688,9 @@ export default {
 						let allBal = parseFloat(this.ExpTable.length * parseFloat(amt))
 						if (res.bal - allBal >= 0) {
 							let timeString = Date.now() + ''
+							// 订单号重复处理，末尾加上_index , START
+							let unqieObject = {}
+							// 订单号重复处理，末尾加上_index , END
 							for (const [k, { tid, ...iterator }] of Object.entries(this.ExpTable)) {
 								let params = {
 									batch: timeString,
@@ -668,9 +705,20 @@ export default {
 									sendProv: prov,
 									sendCity: city,
 									sendCounty: county,
-									sendAddr: address
+									sendAddr: address,
+									agentId,
+									agentName,
+									sendId
 									// senderPostid: postid
 								}
+
+								// 订单号重复处理，末尾加上_index , START
+								if (tid !== '') {
+									if (unqieObject[tid]) params.tid = params.tid + '_' + unqieObject[tid].length
+									else unqieObject[tid] = []
+									unqieObject[tid].push(1)
+								}
+								// 订单号重复处理，末尾加上_index , END
 
 								this.$log('mutily post', params)
 
@@ -944,12 +992,15 @@ export default {
 		handleSelect(row) {
 			this.validatorForm.setNewAddress = `${row.name}/${row.prov}/${row.city}/${row.county}/${row.address}/${row.tel}/${row.postid}`
 			this.validatorForm.setSelectObj = row
-			let { address, prov, city, county, name, tel, postid } = row
+			let { address, prov, city, county, name, tel, postid, agentId, agentName, sendId } = row
 			this.senderForm = {
 				sender: name,
 				senderTel: tel,
 				sendAddr: [prov, city, county],
-				sendAddress: address
+				sendAddress: address,
+				agentId,
+				agentName,
+				sendId
 				// sendPostid: postid
 			}
 		},

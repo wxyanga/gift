@@ -12,7 +12,13 @@
 			<el-form-item label="物流单号：">
 				<el-input v-model="form.orderId" placeholder="输入物流单号"></el-input>
 			</el-form-item>
-			<el-form-item label="下单时间：">
+			<el-form-item label="快递站：" prop="content">
+				<!-- <el-input type="textarea" show-word-limit maxlength="60" v-model="form.content"></el-input> -->
+				<el-select v-model="form.id">
+					<el-option v-for="it in addressData" :key="it.id" :value="it.id" :label="it['xzl_name'] || it['org_name']"></el-option>
+				</el-select>
+			</el-form-item>
+			<!-- <el-form-item label="下单时间：">
 				<el-date-picker
 					format="yyyy-MM-dd"
 					value-format="yyyy-MM-dd HH:mm:ss"
@@ -22,15 +28,16 @@
 					start-placeholder="开始日期"
 					end-placeholder="结束日期"
 				></el-date-picker>
-			</el-form-item>
-		</el-form>
-		<el-form :inline="true" label-width="100px">
+			</el-form-item> -->
 			<el-form-item label=" ">
 				<el-button type="primary" @click="getTableData">查询</el-button>
-				<el-button type="primary" @click="exportEXLApi(null, true)">导出当日快递单号</el-button>
-				<el-button type="primary" @click="exportEXLApi">导出所有查询单号</el-button>
+				<!-- <el-button type="primary" @click="exportEXLApi(null, true)">导出当日快递单号</el-button> -->
+				<!-- <el-button type="primary" @click="exportEXLApi">导出所有查询单号</el-button> -->
 			</el-form-item>
 		</el-form>
+		<!-- <el-form :inline="true" label-width="100px">
+			
+		</el-form> -->
 		<hr />
 		<el-table :data="tableData">
 			<!-- <el-table-column type="index" label="#"></el-table-column> -->
@@ -66,7 +73,6 @@
 			</el-table-column>
 			<el-table-column prop="ec_id" label="订单号"></el-table-column>
 			<el-table-column prop="order_id" label="物流单号"></el-table-column>
-			<el-table-column prop="org_name" label="物流单号"></el-table-column>
 
 			<el-table-column prop="status" label="发货状态">
 				<template slot-scope="prop">
@@ -102,18 +108,27 @@ export default {
 				tid: '',
 				chargeDate: ['', ''],
 				orderId: '',
-				todayDate: ''
+				todayDate: '',
+				id: ''
 			},
 			href: '',
 			expressStatus: expressStatus,
-			useExpress: []
+			useExpress: [],
+			addressData: []
 		}
 	},
 	mounted() {
 		this.getExpType()
 		this.getTableData()
+		this.getBeforeDefaultData()
 	},
 	methods: {
+		getBeforeDefaultData() {
+			this.$post(this.$API.URL_GET_USER_ADDRESS, {}, '').then(res => {
+				res.unshift({ org_name: '', xzl_name: '全部', id: '' })
+				this.addressData = res
+			})
+		},
 		exportEXLApi(e, today = false) {
 			let params = {}
 			if (today) {
@@ -127,7 +142,8 @@ export default {
 						.toString()
 						.padStart(2, '00')
 				params = {
-					chargeDate: [days + ' 00:00:00', days + ' 23:59:59']
+					chargeDate: [days + ' 00:00:00', days + ' 23:59:59'],
+					id: this.form.id
 				}
 			} else {
 				if (this.form.chargeDate[0] && this.form.chargeDate[0] == this.form.chargeDate[1]) {
@@ -165,9 +181,10 @@ export default {
 		},
 		getTableData(e, callback) {
 			// let params = {}
-			// this.$post(this.$API.URL_GET_EXPRESS_MESSAGE,params,'').then()
+
 			// this.total = 200
 			// this.pageSize = 10
+
 			!callback && (this.pageNum = 1)
 			if (this.form.chargeDate[0] && this.form.chargeDate[0] == this.form.chargeDate[1]) {
 				this.form.chargeDate[1] = this.form.chargeDate[1].split(' ')[0] + ' 23:59:59'
@@ -177,10 +194,11 @@ export default {
 				chargeDate: this.form.chargeDate || ['', ''],
 				orderId: this.form.orderId,
 				tid: this.form.tid,
+				id: this.form.id,
 				pageSize: this.pageSize,
 				page: this.pageNum
 			}
-			this.$post(this.$API.URL_GET_EXPRESS_MESSAGE, params, '').then(res => {
+			this.$post(this.$API.PROXY_ORDER, params, '').then(res => {
 				// this.tableData = res.data
 				this.tableData = res.data.filter(item => {
 					// for (const it of this.UserData) {

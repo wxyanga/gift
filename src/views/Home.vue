@@ -8,7 +8,7 @@
 				<Aside></Aside>
 			</el-aside>
 			<el-container style="border-left:1px solid #ccc">
-				<el-main style="height:80vh">
+				<el-main style="height:85vh">
 					<qq></qq>
 					<router-view></router-view>
 				</el-main>
@@ -25,7 +25,7 @@ import qq from 'components/qq.vue'
 import mixin from 'static/mixins.js'
 export default {
 	name: 'home',
-	mixins: [mixin.INFO],
+	mixins: [mixin.INFO, mixin.ADMIN],
 	components: { Aside, Header, qq },
 	data() {
 		return {}

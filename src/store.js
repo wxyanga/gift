@@ -11,7 +11,8 @@ export default new Vuex.Store({
 			title: ''
 		},
 		isLogin: sessionStorage.getItem('loginState'),
-		INFO: sessionStorage.getItem('INFO')
+		INFO: sessionStorage.getItem('INFO'),
+		vipUserAddress: {}
 	},
 	mutations: {
 		showDialog(state) {

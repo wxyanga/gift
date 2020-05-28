@@ -41,9 +41,8 @@ export default {
 	},
 	methods: {
 		getDefaultData() {
-			this.$log('changePublic', '111111111111111111')
 			this.$post(this.$API.URL_KF_PUBLIC_LIST, {}, '').then(res => {
-				this.msg = res
+				this.msg = res.filter(it => it['speak_to'] == 'public')
 				if (!res.length) this.msg = [{ content: '' }]
 			})
 		},

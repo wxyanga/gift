@@ -15,10 +15,10 @@ Vue.config.productionTip = false
 
 function log(tip, ...msg) {
 	if (process.env.NODE_ENV == 'development') {
-		msg.forEach(item => {
-			if (!tip) tip = `--${Object.prototype.toString.call(item)}--`
-			console.info(tip, item)
-		})
+		// if (!tip) tip = `--${Object.prototype.toString.call(item)}--`
+		console.info(tip, ...msg)
+		// msg.forEach(item => {
+		// })
 	}
 }
 Vue.prototype.$log = log
@@ -71,7 +71,7 @@ Vue.prototype.$post = (url, param, successMessage = '操作成功', isShowLoadin
 				customClass: 'custom-loading'
 			})
 		}
-		log('--post params--', url, params)
+		log('--post params--', url, isShowLoading, loading, params)
 		axios
 			.post(url, params)
 			.then(res => {
@@ -86,13 +86,14 @@ Vue.prototype.$post = (url, param, successMessage = '操作成功', isShowLoadin
 					reject(res)
 					log('--post error--', res)
 				}
-				if (loading) {
+				log('------------axios then', url, isShowLoading, loading)
+				if (isShowLoading && loading) {
 					loading.close()
 				}
 			})
 			.catch(error => {
 				Message({ type: 'error', message: '系统异常' })
-				if (loading) {
+				if (isShowLoading && loading) {
 					loading.close()
 				}
 				reject(error)
@@ -132,7 +133,7 @@ router.beforeEach((to, from, next) => {
 	console.log('to.path:', to.path)
 
 	if (!token) {
-		if (to.path == '/' || to.path == '/login') {
+		if (to.path == '/' || to.path == '/login' || /\/proxy\/[0-9]*$/.test(to.path)) {
 			//要想结束路由守卫，整段代码的逻辑必须以next();进行结尾，否则会陷入死循环
 			next()
 		} else {

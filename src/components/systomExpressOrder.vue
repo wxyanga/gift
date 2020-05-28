@@ -59,9 +59,12 @@
 							<el-option v-for="(it, ind) in expTypesCode.filter(it => !it.codeGroup)" :key="ind" :value="it.codeValue" :label="it.codeName"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item v-for="[key, value] in Object.entries(lvMap)" :key="key" :label="value + '价格'" :prop="key">
+					<el-form-item v-for="[key, value] in Object.entries(lvMap)" :key="key" :label="value + '价格：'" :prop="key">
 						<el-input-number :controls="false" v-model="form[key]"></el-input-number>
 					</el-form-item>
+					<!-- <el-form-item label="平台利润：">
+						<span>{{ calcPlant() }}</span>
+					</el-form-item> -->
 				</el-form>
 			</template>
 			<template slot="addOrder">
@@ -181,7 +184,12 @@ export default {
 		this.getExpCodeType()
 		this.getExpType()
 	},
-	computed: {},
+	computed: {
+		calcMax() {
+			let diff = this.form.lv1 - this.form.cost || 0
+			return diff > 0 ? diff : 0
+		}
+	},
 	methods: {
 		init() {
 			this.lvMap = lvMaps
@@ -192,6 +200,7 @@ export default {
 					{ required: true, message: `${value}必填`, trigger: 'blur' },
 					{ type: 'number', message: '金额必须是数字', trigger: 'blur' }
 				]
+
 				this.form[key] = ''
 			}
 		},

@@ -9,9 +9,12 @@
 			</el-form-item>
 		</el-form>
 		<el-table :data="tableData">
-			<el-table-column prop="is_default" label="是否默认">
+			<!-- <el-table-column prop="is_default" label="是否默认">
 				<template slot-scope="prop">{{ prop.row['is_default'] == 1 ? '默认' : '' }}</template>
-			</el-table-column>
+			</el-table-column> -->
+
+			<el-table-column prop="org_name" label="菜单名称"></el-table-column>
+			<el-table-column prop="agent_name" label="发货设备"></el-table-column>
 			<el-table-column prop="name" label="发货人姓名"></el-table-column>
 			<el-table-column prop="tel" label="发货人电话"></el-table-column>
 			<el-table-column prop="prov" label="发货省份"></el-table-column>
@@ -21,14 +24,23 @@
 			<!-- <el-table-column prop="postid" label="发货邮编"></el-table-column> -->
 			<el-table-column label="操作">
 				<template slot-scope="scope">
+					<el-button size="small" type="" @click.native.prevent="changeRow(scope.row)">修改</el-button>
 					<el-button size="small" type="" @click.native.prevent="deleteRow(scope.row.id, scope.$index, tableData)">删除</el-button>
-					<el-button size="small" type="primary" v-if="scope.row['is_default'] != 1" @click.native.prevent="setDefault(scope.row)">设为默认</el-button>
+					<!-- <el-button size="small" type="primary" v-if="scope.row['is_default'] != 1" @click.native.prevent="setDefault(scope.row)">设为默认</el-button> -->
 				</template>
 			</el-table-column>
 		</el-table>
 		<el-dialog title="新增发货人" :visible="modifyStytus" @close="handleLeftClick">
 			<div>
 				<el-form :model="senderForm" ref="senderForm" :rules="senderRules" label-width="150px">
+					<el-form-item prop="agentId" label="发货设备">
+						<el-select v-model="senderForm.agentId" @change="changeType">
+							<el-option v-for="it in printMethine" :key="it.agentId" :value="it.agentId" :label="it.agentName"></el-option>
+						</el-select>
+					</el-form-item>
+					<el-form-item prop="orgName" label="菜单名称">
+						<el-input style="width:90%" v-model="senderForm.orgName"></el-input>
+					</el-form-item>
 					<el-form-item prop="sender" label="发货人姓名">
 						<el-input style="width:90%" v-model="senderForm.sender"></el-input>
 					</el-form-item>
@@ -41,6 +53,7 @@
 					<el-form-item prop="sendAddress" label="详细地址">
 						<el-input type="textarea" style="width:90%" v-model="senderForm.sendAddress"></el-input>
 					</el-form-item>
+
 					<!-- <el-form-item label="发货邮编">
 						<el-input style="width:90%" v-model="senderForm.sendPostid"></el-input>
 					</el-form-item>-->
@@ -48,7 +61,37 @@
 			</div>
 			<div slot="footer" class="dialog-footer">
 				<el-button size="medium" @click="handleLeftClick" class="footer-btn">关闭</el-button>
-				<el-button size="medium" @click="setDefault(null)" class="footer-btn" type="primary">新增并设为默认</el-button>
+				<el-button size="medium" @click="setDefault(null)" class="footer-btn" type="primary">新增</el-button>
+			</div>
+		</el-dialog>
+		<el-dialog title="编辑发货人" :visible="modifyStytus2" @close="handleLeftClick">
+			<div>
+				<el-form :model="senderForm" ref="senderForm" :rules="senderRules" label-width="150px">
+					<el-form-item prop="agentId" label="发货设备">
+						<el-select v-model="senderForm.agentId" @change="changeType">
+							<el-option v-for="it in printMethine" :key="it.agentId" :value="it.agentId" :label="it.agentName"></el-option>
+						</el-select>
+					</el-form-item>
+					<el-form-item prop="orgName" label="菜单名称">
+						<el-input style="width:90%" v-model="senderForm.orgName"></el-input>
+					</el-form-item>
+					<el-form-item prop="sender" label="发货人姓名">
+						<el-input style="width:90%" v-model="senderForm.sender"></el-input>
+					</el-form-item>
+					<el-form-item prop="senderTel" label="发货人电话">
+						<el-input style="width:90%" v-model="senderForm.senderTel"></el-input>
+					</el-form-item>
+					<el-form-item prop="sendAddr" label="设置发货省市区">
+						<el-cascader :props="cascaderProps" style="width:90%" :options="options" v-model="senderForm.sendAddr"></el-cascader>
+					</el-form-item>
+					<el-form-item prop="sendAddress" label="详细地址">
+						<el-input type="textarea" style="width:90%" v-model="senderForm.sendAddress"></el-input>
+					</el-form-item>
+				</el-form>
+			</div>
+			<div slot="footer" class="dialog-footer">
+				<el-button size="medium" @click="handleLeftClick" class="footer-btn">关闭</el-button>
+				<el-button size="medium" @click="setDefault2(null)" class="footer-btn" type="primary">修改</el-button>
 			</div>
 		</el-dialog>
 	</div>
@@ -83,6 +126,7 @@ export default {
 				value: 'label'
 			},
 			senderForm: {
+				orgName: '',
 				sender: '',
 				senderTel: '',
 				sendAddr: [],
@@ -99,10 +143,12 @@ export default {
 				receiverPostid: ''
 			},
 			senderRules: {
+				orgName: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
 				sender: [{ required: true, message: '请输入发货人姓名', trigger: 'blur' }],
 				senderTel: [{ validator: checkRecive, required: true, trigger: 'blur' }],
 				sendAddress: [{ required: true, message: '请输入详细地址', trigger: 'blur' }],
-				sendAddr: [{ required: true, message: '请输入发货省市区', trigger: 'blur' }]
+				sendAddr: [{ required: true, message: '请输入发货省市区', trigger: 'blur' }],
+				agentId: [{ required: true, message: '打印机必选', trigger: 'blur' }]
 			},
 			rules2: {
 				ExpTypeLabel: [{ required: true, message: '请选择快递信息', trigger: 'blur' }],
@@ -139,16 +185,60 @@ export default {
 			separateSelected: '',
 			ExpTable: [],
 			modifyStytus: false,
-			tableData: []
+			modifyStytus2: false,
+			tableData: [],
+			printMethine: printMethine
 		}
 	},
 
 	mounted() {
 		this.getDefaultData()
+		// this.printMethine = printMethine;
 	},
 	methods: {
+		setDefault2() {
+			this.$refs.senderForm.validate(validat => {
+				console.info('setDefault2', validat)
+				if (validat) {
+					let [sendProv, sendCity, sendCounty] = this.senderForm.sendAddr
+					let params = {
+						...this.senderForm,
+						sendTel: this.senderForm.senderTel,
+						sendProv,
+						sendCity,
+						sendCounty
+					}
+
+					this.$post(this.$API.PROXY_MODIFY_ADDRESS, params, '设置成功').then(() => {
+						this.handleLeftClick()
+						this.getDefaultData()
+					})
+				}
+			})
+		},
+		changeRow(row) {
+			console.info('row', row)
+			this.modifyStytus2 = true
+			this.senderForm = {
+				id: row.id,
+				agentId: row['agent_id'],
+				orgName: row['org_name'],
+				sender: row.name,
+				senderTel: row.tel,
+				sendAddr: [row.prov, row.city, row.county],
+				sendAddress: row.address,
+				sendPostid: row.postid
+			}
+		},
+		changeType(id) {
+			this.printMethine.forEach(it => {
+				if (it.agentId == id) this.senderForm.agentName = it.agentName
+			})
+		},
 		handleLeftClick() {
+			this.$refs.senderForm.clearValidate()
 			this.modifyStytus = false
+			this.modifyStytus2 = false
 			this.senderForm = {
 				sender: '',
 				senderTel: '',
@@ -187,7 +277,7 @@ export default {
 					sendAddress: row.address,
 					sendPostid: ''
 				}
-				this.$post(this.$API.URL_SET_DEFAULT_ADDRESS, params, '设置成功').then(() => {
+				this.$post(this.$API.PROXY_ADDRESS, params, '设置成功').then(() => {
 					this.getDefaultData()
 				})
 			} else
@@ -213,7 +303,7 @@ export default {
 							sendCounty
 						}
 
-						this.$post(this.$API.URL_SET_DEFAULT_ADDRESS, params, '设置成功').then(() => {
+						this.$post(this.$API.PROXY_ADDRESS, params, '设置成功').then(() => {
 							this.handleLeftClick()
 							this.getDefaultData()
 						})
