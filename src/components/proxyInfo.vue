@@ -68,7 +68,7 @@ export default {
 			callback()
 		}
 		return {
-			getBaseUrl: getBaseUrl + `/#/proxy/`,
+			getBaseUrl: getDomainUrl + `/#/proxy/`,
 			moneys: [],
 			userLv: [],
 			radio: '',

@@ -15,6 +15,7 @@ var printMethine = [
 ]
 // var getBaseUrl = 'http://8.129.22.111:80'
 var getBaseUrl = 'http://39.98.242.160:80'
+var getDomainUrl = 'http://shiwu.zcmkd.com/home'
 
 // 系统菜单 分管理员与用户
 var mediaAudio = {
