@@ -378,6 +378,16 @@ var MainIndex = {
 }
 
 // 充值二维码
-var QRCode = isProduction + 'img/money1.png'
-var QRCode1 = isProduction + 'img/4numbers.png'
+var QRCode = isProduction + 'img/money2.png'
+var QRCode1 = isProduction + 'img/wxzf.gif'
+var QRCode2 = isProduction + 'img/zfbzf.gif'
+var QRCode3 = isProduction + 'img/ysfzf.gif'
+var WXZFIMG1 = isProduction + 'img/wxzf1.png'
+var WXZFIMG2 = isProduction + 'img/wxzf2.png'
+var ZFBZFIMG1 = isProduction + 'img/zfbzf1.png'
+var ZFBZFIMG2 = isProduction + 'img/zfbzf2.png'
+var ZFBZFIMG3 = isProduction + 'img/zfbzf3.png'
+var YSFZFIMG1 = isProduction + 'img/ysfzf1.png'
+var YSFZFIMG2 = isProduction + 'img/ysfzf2.png'
+var YSFZFIMG3 = isProduction + 'img/ysfzf3.png'
 var openQQ = false

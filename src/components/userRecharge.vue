@@ -38,9 +38,11 @@
 			</el-form>
 			<div style="text-align:center">
 				<img style="width: 300px;" :src="imgSrc" alt />
-                <i class="el-icon-caret-right" style="height: 233px;
-    vertical-align: text-bottom;margin:0 20px"></i>
-				<img style="height: 460px;" :src="imgSrc1" alt />
+                <!--<i class="el-icon-caret-right" style="height: 233px;-->
+    <!--vertical-align: text-bottom;margin:0 20px"></i>-->
+				<!--<img style="height: 460px;" :src="imgSrc1" alt />-->
+				<!--<img style="height: 460px;" :src="imgSrc2" alt />-->
+				<!--<img style="height: 460px;" :src="imgSrc3" alt />-->
 				<br />
 				<p>扫码付款后，点击下一步输入交易号<span style="color:red">(交易号后4位)</span></p>
 				<br />
@@ -58,14 +60,41 @@
 				<el-form-item prop="orderId" label="交易单号后4位：">
 					<el-input maxlength="4" v-model="formData.orderId" placeholder="请输入交易单号最后4位"></el-input>
 				</el-form-item>
-                <el-form-item label="交易单号示例：">
-                    <img style="height: 460px;" :src="imgSrc1" alt />
-				</el-form-item>
+
 			</el-form>
 			<div style="text-align:center">
 				<el-button type="primary" @click="step = 2">上一步</el-button>
 				<el-button type="primary" @click="uploadData">确认</el-button>
 			</div>
+			<el-form label-width="150px">
+				<el-form-item label="交易单号示例：">
+					<div style="float: left;text-align:center;border: solid 2px rgba(67,41,161,0.71);">
+						微信支付说明：
+						<br>
+						<img style="height: 668px;" :src="wxzfSrc1" alt />
+						<p style="color: red;font-size: 20px;margin-top: -20px;margin-bottom: 0px;">↓</p>
+						<img style="height: 668px;" :src="wxzfSrc2" alt />
+					</div>
+					<div style="float: left;margin-left: 50px;text-align:center;border: solid 2px rgba(161,0,0,0.71);">
+						支付宝支付说明：
+						<br>
+						<img style="height: 668px;" :src="zfbzfSrc1" alt />
+						<p style="color: red;font-size: 20px;margin-top: -20px;margin-bottom: 0px;">↓</p>
+						<img style="height: 668px;" :src="zfbzfSrc2" alt />
+						<p style="color: red;font-size: 20px;margin-top: -20px;margin-bottom: 0px;">↓</p>
+						<img style="height: 668px;" :src="zfbzfSrc3" alt />
+					</div>
+					<div style="float: left;margin-left: 50px;text-align:center;border: solid 2px rgba(0,161,65,0.71);">
+						云闪付支付说明：
+						<br>
+						<img style="height: 668px;" :src="ysfzfSrc1" alt />
+						<p style="color: red;font-size: 20px;margin-top: -20px;margin-bottom: 0px;">↓</p>
+						<img style="height: 668px;" :src="ysfzfSrc2" alt />
+						<p style="color: red;font-size: 20px;margin-top: -20px;margin-bottom: 0px;">↓</p>
+						<img style="height: 668px;" :src="ysfzfSrc3" alt />
+					</div>
+				</el-form-item>
+			</el-form>
 		</div>
         <a :href="payUrl" ref='zfbLink'></a>
 	</div>
@@ -94,6 +123,16 @@ export default {
 			type: '',
             imgSrc: '',
             imgSrc1:'',
+			imgSrc2:'',
+			imgSrc3:'',
+			wxzfSrc1:'',
+			wxzfSrc2:'',
+			zfbzfSrc1:'',
+			zfbzfSrc2:'',
+			zfbzfSrc3:'',
+			ysfzfSrc1:'',
+			ysfzfSrc2:'',
+			ysfzfSrc3:'',
 			step: 1,
 			selectType: {},
 			formData: {
@@ -152,6 +191,16 @@ export default {
 			// this.imgSrc = require('assets/' + QRCode)
             this.imgSrc = QRCode
             this.imgSrc1 = QRCode1
+			this.imgSrc2 = QRCode2
+			this.imgSrc3 = QRCode3
+			this.wxzfSrc1 = WXZFIMG1
+			this.wxzfSrc2 = WXZFIMG2
+			this.zfbzfSrc1 = ZFBZFIMG1
+			this.zfbzfSrc2 = ZFBZFIMG2
+			this.zfbzfSrc3 = ZFBZFIMG3
+			this.ysfzfSrc1 = YSFZFIMG1
+			this.ysfzfSrc2 = YSFZFIMG2
+			this.ysfzfSrc3 = YSFZFIMG3
 			this.userLv = userLv.filter(item => item.value == this.userInfo.user_type)[0].label
 			let typeIndex = -1
 			RechargeType.forEach((item, index) => {
