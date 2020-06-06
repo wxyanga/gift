@@ -15,6 +15,7 @@
 					range-separator="至"
 					start-placeholder="开始日期"
 					end-placeholder="结束日期"
+					:default-time="['00:00:00', '23:59:59']"
 				>
 				</el-date-picker>
 			</el-form-item>
@@ -69,6 +70,7 @@
 
 <script>
 import mixin from 'static/mixins.js'
+
 export default {
 	mixins: [mixin.pagination],
 	data() {
@@ -118,6 +120,7 @@ export default {
 		},
 		getTableData(e, callback) {
 			!callback && (this.pageNum = 1)
+
 			let params = {
 				chargeType: this.form.chargeType,
 				chargeDate: this.form.chargeDate || ['', ''],
