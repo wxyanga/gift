@@ -222,6 +222,7 @@ export default {
 			this.senderForm = {
 				id: row.id,
 				agentId: row['agent_id'],
+				agentName: row['agent_name'],
 				orgName: row['org_name'],
 				sender: row.name,
 				senderTel: row.tel,
