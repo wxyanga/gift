@@ -66,7 +66,7 @@ export default {
 					this.$post(this.$API.PROXY_CHARGE, {}, '', false).then(res => {
 						res.hasCharge && this.StartMussic()
 					})
-				}, this.mediaAudio.times)
+				}, mediaAudio.times)
 			},
 			StartMussic() {
 				this.audio.play()
